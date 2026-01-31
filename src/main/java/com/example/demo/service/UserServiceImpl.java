@@ -74,4 +74,48 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
         log.info("User with id {} deleted", id);
     }
+
+    @Override
+    public Page<UserResponseDTO> searchUsers(String name, String email, int page, int size, String sortBy,
+                                             String direction){
+        log.info("Searching users: name={}, email={}, page={}, size={}, sortBy={}, direction={}",
+                name, email, page, size, sortBy, direction
+        );
+
+            // 1️⃣ Normalize inputs (treat blank as null)
+            if (name != null && name.trim().isEmpty()) {
+                name = null;
+            }
+            if (email != null && email.trim().isEmpty()) {
+                email = null;
+            }
+
+            // 2️⃣ Build Sort
+            Sort sort = direction.equalsIgnoreCase("asc")
+                    ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
+
+            // 3️⃣ Build Pageable
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            // 4️⃣ Decide which repository method to call
+            Page<User> usersPage;
+
+            if (name != null && email != null) {
+                usersPage = userRepository.findByNameContainingIgnoreCaseAndEmailContainingIgnoreCase(
+                                name, email, pageable
+                        );
+            } else if (name != null) {
+                usersPage = userRepository.findByNameContainingIgnoreCase(name, pageable);
+            } else if (email != null) {
+                usersPage = userRepository.findByEmailContainingIgnoreCase(email, pageable);
+            } else {
+                // No filters → return all users (reuse Ticket 11 logic)
+                usersPage = userRepository.findAll(pageable);
+            }
+
+            // 5️⃣ Convert Entity → DTO
+            return usersPage.map(UserMapper::toDTO);
+        }
 }
+

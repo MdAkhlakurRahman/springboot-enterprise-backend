@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.UserResponseDTO;
 import com.example.demo.entity.User;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface UserService {
 
@@ -11,4 +12,6 @@ public interface UserService {
     Page<UserResponseDTO> getUsers(int page, int size, String sortBy, String direction);
     User updateUser(Long id, User updatedUser);
     void deleteUser(Long id);
+    Page<UserResponseDTO> searchUsers(String name, String email, int page, int size, String sortBy,
+                                         String direction);
 }

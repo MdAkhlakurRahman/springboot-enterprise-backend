@@ -56,6 +56,19 @@ public class UserController {
         return ResponseEntity.ok(usersPage);
     }
 
+   @GetMapping("/search")
+   public ResponseEntity<Page<UserResponseDTO>> searchUsers(
+           @RequestParam(required = false) String name,
+           @RequestParam(required = false) String email,
+           @RequestParam(defaultValue = "0") int page,
+           @RequestParam(defaultValue = "10") int size,
+           @RequestParam(defaultValue = "id") String sortBy,
+           @RequestParam(defaultValue = "asc") String direction
+   ){
+       Page<UserResponseDTO> result = userService.searchUsers(name, email, page, size, sortBy, direction);
+       return ResponseEntity.ok(result);
+   }
+
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,@Valid @RequestBody UserRequestDTO dto){
         User updatedEntity = UserMapper.toEntity(dto);
