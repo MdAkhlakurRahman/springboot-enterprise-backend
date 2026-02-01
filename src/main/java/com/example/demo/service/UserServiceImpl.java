@@ -117,5 +117,30 @@ public class UserServiceImpl implements UserService {
             // 5️⃣ Convert Entity → DTO
             return usersPage.map(UserMapper::toDTO);
         }
+
+    @Override
+    public Page<UserResponseDTO> searchUsersByDomain(String domain, int page, int size, String sortBy, String direction) {
+        //logging
+        log.info("Searching users by email domain: {}", domain);
+
+        //1.Input Normalisation
+        if(domain != null) {
+            domain = domain.trim();
+            if (domain.isEmpty())
+                domain = null;
+        }
+        //2.Build Sorting
+        Sort sort = direction.equalsIgnoreCase("asc")
+                                ?Sort.by(sortBy).ascending()
+                                :Sort.by(sortBy).descending();
+        //3. Build Pageable
+        Pageable pageable = PageRequest.of(page,size,sort);
+
+        //4.Repository call
+        Page<User> userPage= userRepository.findUsersByDomain(domain,pageable);
+
+        // 5️⃣ Entity → DTO mapping
+        return userPage.map(UserMapper::toDTO);
+    }
 }
 

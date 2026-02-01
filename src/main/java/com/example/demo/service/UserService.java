@@ -14,4 +14,5 @@ public interface UserService {
     void deleteUser(Long id);
     Page<UserResponseDTO> searchUsers(String name, String email, int page, int size, String sortBy,
                                          String direction);
+    Page<UserResponseDTO> searchUsersByDomain(String domain, int page, int size, String sortBy, String direction);
 }

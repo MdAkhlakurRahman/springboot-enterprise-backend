@@ -69,6 +69,21 @@ public class UserController {
        return ResponseEntity.ok(result);
    }
 
+
+
+    @GetMapping("/search/domain")
+    public ResponseEntity<Page<UserResponseDTO>>  searchUserByDomain(
+            @RequestParam String domain,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ){
+        Page<UserResponseDTO> result = userService.searchUsersByDomain(domain,page,size,sortBy,direction);
+       return ResponseEntity.ok(result);
+    }
+
+
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,@Valid @RequestBody UserRequestDTO dto){
         User updatedEntity = UserMapper.toEntity(dto);
