@@ -5,12 +5,14 @@ import com.example.demo.entity.User;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.specification.UserSpecification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 
@@ -142,5 +144,31 @@ public class UserServiceImpl implements UserService {
         // 5️⃣ Entity → DTO mapping
         return userPage.map(UserMapper::toDTO);
     }
+
+    public Page<UserResponseDTO> filterUsers(String name, String email,Boolean active,int page,int size,String sortBy,String direction){
+        //logging
+        log.info("Filtering users: name={}, email={}, active={}, page={}, size={}, sortBy={}, direction={}",
+                name, email, active, page, size, sortBy, direction);
+
+            // ✅ Start with a real specification (NOT null)
+            Specification<User> specification = Specification.where(UserSpecification.hasName(name));
+            // 2️⃣ Dynamically add filters
+            specification = specification.and(UserSpecification.hasEmail(email));
+            specification = specification.and(UserSpecification.isActive(active));
+
+            // 3️⃣ Build sorting
+            Sort sort = direction.equalsIgnoreCase("asc")
+                    ? Sort.by(sortBy).ascending()
+                    : Sort.by(sortBy).descending();
+
+            // 4️⃣ Build pageable
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            // 5️⃣ Fetch data using specifications
+            Page<User> usersPage = userRepository.findAll(specification, pageable);
+
+            // 6️⃣ Convert Entity → DTO
+            return usersPage.map(UserMapper::toDTO);
+        }
 }
 

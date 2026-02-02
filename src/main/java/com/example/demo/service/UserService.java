@@ -15,4 +15,6 @@ public interface UserService {
     Page<UserResponseDTO> searchUsers(String name, String email, int page, int size, String sortBy,
                                          String direction);
     Page<UserResponseDTO> searchUsersByDomain(String domain, int page, int size, String sortBy, String direction);
+
+    Page<UserResponseDTO> filterUsers(String name, String email,Boolean active,int page,int size,String sortBy,String direction);
 }

@@ -83,6 +83,20 @@ public class UserController {
        return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<Page<UserResponseDTO>> filterUsers(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ){
+        Page<UserResponseDTO> userPage = userService.filterUsers(name, email, active, page, size, sortBy, direction);
+        return ResponseEntity.ok(userPage);
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id,@Valid @RequestBody UserRequestDTO dto){
